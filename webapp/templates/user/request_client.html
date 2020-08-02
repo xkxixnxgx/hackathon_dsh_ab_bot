@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if id_client %}
+        <form action="{{ url_for('user.request_client') }}" method="GET">
+            <div class="container">
+                <h2>
+                <p class="text-center">Request Infomation</p>
+                </h2>
+                    <div class="row">
+                    <div class="col">
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            {{ request_client.first_name_client.label }}
+                            {{ request_client.first_name_client() }}
+                        </div>
+                        {{ request_client.submit_update() }}
+                    </div>
+                    <div class="col">
+                    </div>
+                    </div>
+                    <div class="row">
+                        <h1> </h1>
+                    </div>
+                    <br>
+                    <div class="row">
+                    <div class="col">
+                    </div>
+
+                    <div class="col">
+                    </div>
+                    </div>
+            </div>
+        </form>
+    {% else %}
+        <h1>Error. Pls update page<h/>
+    {% endif %}
+{% endblock %}
