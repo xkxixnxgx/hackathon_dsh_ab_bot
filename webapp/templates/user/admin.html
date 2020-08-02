@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="{{ url_for('user.process_save') }}" method="POST">
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ image_file }}">
+            <div class="media-body">
+              <h2 class="account-heading">{{ current_user.username }}</h2>
+              <p class="text-secondary">{{ current_user.user_email }}</p>
+            </div>
+        </div>
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Input text</legend>
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1"></label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="15"></textarea>
+            </div>
+        </fieldset>
+        {{ form.picture() }}
+        <br>
+        <div class="form-group">
+            {{ form.submit }}
+        </div>
+    </div>
+</form>
+{% endblock %}
