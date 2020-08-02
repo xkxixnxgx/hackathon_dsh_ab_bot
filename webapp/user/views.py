@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user
-from webapp.user.forms import LoginForm, RegisterForm, AdminForm, LoginForm, RequestsForm
+from webapp.user.forms import LoginForm, RegisterForm, AdminForm, LoginForm, RequestsForm, Request_clientForm
 from webapp.user.models import User, Requests
 from webapp.user.decorators import admin_required
 from datetime import datetime
@@ -81,16 +81,6 @@ def admin_index():
     else:
         return redirect(url_for("user.console"))
 
-@blueprint.route('/requests', methods=['GET'])
-def requests():
-    if current_user.is_authenticated:
-        title = 'Requests'
-        request_list = Requests.query.all()
-        return render_template('user/requests.html', page_title=title, request_list=request_list)
-    else:
-        flash('You are not authenticated. Please login.', 'warning')
-        return redirect(url_for('user.login'))
-
 
 @blueprint.route('/process_save', methods=['POST'])
 def process_save():
@@ -103,8 +93,28 @@ def process_save():
     return redirect(url_for('user.requests'))
 
 
-@blueprint.route('/request_viewing', methods=['POST'])
-def request_viewing():
+@blueprint.route('/requests', methods=['GET'])
+def requests():
+    if current_user.is_authenticated:
+        title = 'Requests'
+        request_list = Requests.query.all()
+        return render_template('user/requests.html', page_title=title, request_list=request_list)
+    else:
+        flash('You are not authenticated. Please login.', 'warning')
+        return redirect(url_for('user.login'))
+
+@blueprint.route('/request_client/')
+@blueprint.route('/request_client/<id_client>', methods=['GET'])
+def request_client(id_client=None):
+    title = 'Client id: ' + str(id_client)
+    form = Request_clientForm()
+    request_client = Requests.query.all()
+    adress = 'user/request_client.html'
+    return render_template(adress, page_title=title, request_client=request_client, id_client=id_client, form=form)
+
+
+@blueprint.route('/request_client/<id_client>', methods=['POST'])
+def request_update(id_client):
     form = RequestsForm()
     if form.validate_on_submit():
         request_update = Requests(
@@ -120,4 +130,6 @@ def request_viewing():
         db.session.add(request_update)
         db.session.commit()
         flash('Date of request update.', 'success')
-    return redirect(url_for('user.requests'))
+    return redirect(url_for('user.request_client' + id_client))
+
+

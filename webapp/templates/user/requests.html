@@ -24,6 +24,7 @@
                         <th scope="col">Passport number</th>
                         <th scope="col">Phone</th>
                         <th scope="col">Status</th>
+                        <th scope="col">View</th>
                     </tr>
                     </thead>
                     {% for request in request_list %}
@@ -49,12 +50,21 @@
                               </div>
                             </div>
                         </td>
+                        <td><a href="/user/request_client/{{request.id}}" class="text-decoration-none">Check</a></td>
                         </tr>
                     </tbody>
                     {% endfor %}
                     </table>
+                    <nav aria-label="Page navigation example">
+                      <ul class="pagination justify-content-center">
+                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                      </ul>
+                    </nav>
                 <div class="col col-lg-2">
-
                 </div>
             </div>
 

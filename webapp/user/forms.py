@@ -60,3 +60,18 @@ class RequestsForm(FlaskForm):
     submit = SubmitField('Status', render_kw={"class": "btn btn-secondary dropdown-toggle"})
 
 
+class Request_clientForm(FlaskForm):
+    id = StringField('id', validators=[DataRequired()], render_kw={"class": "form-control"})
+    product = StringField('product', validators=[DataRequired()], render_kw={"class": "form-control"})
+    date_add = StringField('date add', validators=[DataRequired()], render_kw={"class": "form-control"})
+    status_request = StringField('status_request', validators=[DataRequired()], render_kw={"class": "form-control"})
+    first_name_client = StringField('first name', validators=[DataRequired()], render_kw={"class": "form-control"})
+    last_name_client = StringField('last name', validators=[DataRequired()], render_kw={"class": "form-control"})
+    phone_client = StringField('phone', validators=[DataRequired()], render_kw={"class": "form-control"})
+    passport_series = StringField('passport_series', validators=[DataRequired()], render_kw={"class": "form-control"})
+    passport_number = StringField('passport_number', validators=[DataRequired()], render_kw={"class": "form-control"})
+    submit_update = SubmitField('Update', render_kw={"class": "btn btn-success"})
+    submit_accept = SubmitField('Accept', render_kw={"class": "btn btn-success"})
+    submit_reject = SubmitField('reject', render_kw={"class": "btn btn-success"})
+
+
