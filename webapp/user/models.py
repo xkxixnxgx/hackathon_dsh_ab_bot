@@ -27,13 +27,20 @@ class User(db.Model, UserMixin):
         return self.role == 'admin'
 
 
-class Content(db.Model, UserMixin):
+class Requests(db.Model, UserMixin):
     id = db.Column(db.Integer, index=True, primary_key=True)
-    content = db.Column(db.String(1500), unique=False, nullable=False)
-    picture = db.Column(db.String(70), nullable=True)
+    product = db.Column(db.String(100), unique=False, nullable=False)
+    date_add = db.Column(db.String(20), nullable=False)
+    status_request = db.Column(db.String(20), unique=False, nullable=False)
+    first_name_client = db.Column(db.String(20), unique=False, nullable=False)
+    last_name_client = db.Column(db.String(20), unique=False, nullable=False)
+    passport_series = db.Column(db.String(20), unique=False, nullable=False)
+    passport_number = db.Column(db.String(20), unique=False, nullable=False)
+    phone_client = db.Column(db.String(20), index=True, unique=True, nullable=False)
+
 
     def __repr__(self):
-        return '<Content {}>'.format(self.content)
+        return '<Product {}>'.format(self.product)
 
     @property
     def is_admin(self):

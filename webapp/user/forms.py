@@ -47,7 +47,16 @@ class AdminForm(FlaskForm):
     submit = SubmitField('Save', render_kw={"class": "btn btn-success"})
 
 
-class ContentForm(FlaskForm):
-    content = StringField('Text', validators=[DataRequired()], render_kw={"class": "form-control"})
-    picture = FileField('Update Picture', render_kw={"class": "rounded"})
-    submit = SubmitField('Save', render_kw={"class": "btn btn-success"})
+class RequestsForm(FlaskForm):
+    id = StringField('id', validators=[DataRequired()], render_kw={"class": "form-control"})
+    product = StringField('product', validators=[DataRequired()], render_kw={"class": "form-control"})
+    date_add = StringField('date add', validators=[DataRequired()], render_kw={"class": "form-control"})
+    status_request = StringField('status_request', validators=[DataRequired()], render_kw={"class": "form-control"})
+    first_name_client = StringField('first name', validators=[DataRequired()], render_kw={"class": "form-control"})
+    last_name_client = StringField('last name', validators=[DataRequired()], render_kw={"class": "form-control"})
+    phone_client = StringField('phone', validators=[DataRequired()], render_kw={"class": "form-control"})
+    passport_series = StringField('passport_series', validators=[DataRequired()], render_kw={"class": "form-control"})
+    passport_number = StringField('passport_number', validators=[DataRequired()], render_kw={"class": "form-control"})
+    submit = SubmitField('Status', render_kw={"class": "btn btn-secondary dropdown-toggle"})
+
+

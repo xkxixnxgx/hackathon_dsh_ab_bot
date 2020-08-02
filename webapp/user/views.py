@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user
-from webapp.user.forms import LoginForm, RegisterForm, AdminForm, LoginForm, ContentForm
-from webapp.user.models import User, Content
+from webapp.user.forms import LoginForm, RegisterForm, AdminForm, LoginForm, RequestsForm
+from webapp.user.models import User, Requests
 from webapp.user.decorators import admin_required
 from datetime import datetime
 from webapp.user.utils import save_picture
@@ -58,7 +58,7 @@ def process_login():
         if user and user.check_password(form.user_password.data):
             login_user(user, remember=form.remember_me.data)
             flash('You have successfully logged in', 'success')
-            return redirect(url_for('user.content'))
+            return redirect(url_for('user.requests'))
         else:
             flash('Login nsuccessful. Please check email and password', 'warning')
     return redirect(url_for('user.login'))
@@ -81,12 +81,12 @@ def admin_index():
     else:
         return redirect(url_for("user.console"))
 
-@blueprint.route('/content', methods=['GET', 'POST'])
-def content():
+@blueprint.route('/requests', methods=['GET'])
+def requests():
     if current_user.is_authenticated:
-        title = 'My content'
-        form = ContentForm()
-        return render_template('user/content.html', page_title=title, form=form)
+        title = 'Requests'
+        request_list = Requests.query.all()
+        return render_template('user/requests.html', page_title=title, request_list=request_list)
     else:
         flash('You are not authenticated. Please login.', 'warning')
         return redirect(url_for('user.login'))
@@ -96,8 +96,28 @@ def content():
 def process_save():
     form = AdminForm()
     if form.validate_on_submit():
-        new_content = Content(content=form.content.data, picture=form.picture.data)
+        new_content = Requests(content=form.content.data, picture=form.picture.data)
         db.session.add(new_content)
         db.session.commit()
         flash('You have new content.', 'success')
-    return redirect(url_for('user.content'))
+    return redirect(url_for('user.requests'))
+
+
+@blueprint.route('/request_viewing', methods=['POST'])
+def request_viewing():
+    form = RequestsForm()
+    if form.validate_on_submit():
+        request_update = Requests(
+            product=form.product.data,
+            date_add=form.date_add.data,
+            status_request=form.status_request.data,
+            first_name_client=form.first_name_client.data,
+            last_name_client=form.last_name_client.data,
+            phone_client=form.phone_client.data,
+            passport_series=form.passport_series.data,
+            passport_number=form.passport_number.data
+            )
+        db.session.add(request_update)
+        db.session.commit()
+        flash('Date of request update.', 'success')
+    return redirect(url_for('user.requests'))
