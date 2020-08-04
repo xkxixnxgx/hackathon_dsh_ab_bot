@@ -2,34 +2,58 @@
 
 {% block content %}
     {% if id_client %}
-        <form action="{{ url_for('user.request_client') }}" method="GET">
+        <form action="{{ url_for('user.request_client') }}" method="POST">
             <div class="container">
                 <h2>
                 <p class="text-center">Request Infomation</p>
                 </h2>
                     <div class="row">
-                    <div class="col">
-                    </div>
-                    <div class="col-4">
-                        <div class="form-group">
-                            {{ request_client.first_name_client.label }}
-                            {{ request_client.first_name_client() }}
+                        <div class="col">
                         </div>
-                        {{ request_client.submit_update() }}
-                    </div>
-                    <div class="col">
-                    </div>
-                    </div>
-                    <div class="row">
-                        <h1> </h1>
-                    </div>
-                    <br>
-                    <div class="row">
-                    <div class="col">
-                    </div>
-
-                    <div class="col">
-                    </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                {{ form.product.label }}
+                                {{ form.product() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.date_add.label }}
+                                {{ form.date_add() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.status_request.label }}
+                                {{ form.status_request() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.first_name_client.label }}
+                                {{ form.first_name_client() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.last_name_client.label }}
+                                {{ form.last_name_client() }}
+                            </div>
+                             <div class="form-group">
+                                {{ form.phone_client.label }}
+                                {{ form.phone_client() }}
+                            </div>
+                             <div class="form-group">
+                                {{ form.passport_series.label }}
+                                {{ form.passport_series() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.passport_number.label }}
+                                {{ form.passport_number() }}
+                            </div>
+                            <a class="btn btn-outline-secondary" href="?status_request=unchanged">Unchanged and back</a>
+                            <a class="btn btn-outline-warning" href="?status_request=update">Update</a>
+                            <a class="btn btn-outline-success" href="?status_request=done">Accept</a>
+                            <a class="btn btn-outline-danger" href="?status_request=refused">Reject</a>
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                        </div>
                     </div>
             </div>
         </form>

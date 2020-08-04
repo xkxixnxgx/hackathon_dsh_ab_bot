@@ -97,39 +97,140 @@ def process_save():
 def requests():
     if current_user.is_authenticated:
         title = 'Requests'
+        form = RequestsForm()
         request_list = Requests.query.all()
-        return render_template('user/requests.html', page_title=title, request_list=request_list)
+        return render_template('user/requests.html', page_title=title, request_list=request_list, form=form)
     else:
         flash('You are not authenticated. Please login.', 'warning')
         return redirect(url_for('user.login'))
 
+
+@blueprint.route('/requests/considers', methods=['GET'])
+def requests_considers():
+    if current_user.is_authenticated:
+        title = 'Requests considers'
+        form = RequestsForm()
+        status_request = 'considers'
+        request_list = Requests.query.filter(Requests.status_request == status_request)
+        return render_template('user/requests_considers.html',
+                               page_title=title,
+                               request_list=request_list,
+                               form=form
+                               )
+    else:
+        flash('You are not authenticated. Please login.', 'warning')
+        return redirect(url_for('user.login'))
+
+
+@blueprint.route('/requests/done', methods=['GET'])
+def requests_done():
+    if current_user.is_authenticated:
+        title = 'Requests done'
+        form = RequestsForm()
+        status_request = 'done'
+        request_list = Requests.query.filter(Requests.status_request == status_request)
+        return render_template('user/requests_done.html',
+                               page_title=title,
+                               request_list=request_list,
+                               form=form
+                               )
+    else:
+        flash('You are not authenticated. Please login.', 'warning')
+        return redirect(url_for('user.login'))
+
+
+@blueprint.route('/requests/refused', methods=['GET'])
+def requests_refused():
+    if current_user.is_authenticated:
+        title = 'Requests refused'
+        form = RequestsForm()
+        status_request = 'refused'
+        request_list = Requests.query.filter(Requests.status_request == status_request)
+        return render_template('user/requests_refused.html',
+                               page_title=title,
+                               request_list=request_list,
+                               form=form
+                               )
+    else:
+        flash('You are not authenticated. Please login.', 'warning')
+        return redirect(url_for('user.login'))
+
+
 @blueprint.route('/request_client/')
-@blueprint.route('/request_client/<id_client>', methods=['GET'])
+@blueprint.route('/request_client/<id_client>', methods=['GET', 'POST'])
 def request_client(id_client=None):
     title = 'Client id: ' + str(id_client)
     form = Request_clientForm()
-    request_client = Requests.query.all()
-    adress = 'user/request_client.html'
-    return render_template(adress, page_title=title, request_client=request_client, id_client=id_client, form=form)
+    if request.method == 'GET':
+        return render_template('user/request_client.html', page_title=title, id_client=id_client, form=form)
+
+    if request.method == 'POST':
+        if request.arga.get('status_request'):
+            marker_change_request = request.arga.get('status_request')
+
+            if marker_change_request == 'unchanged':
+                flash('You left the request without modifications.', 'secondary')
+                return redirect(url_for('user.requests'))
+
+            if marker_change_request == 'update':
+                if form.validate_on_submit():
+                    request_update = Requests.query.filter(Requests.status_request == request.arga.get('status_request'))
+                    #request_update = Requests.query.filter(Requests.id == id_client).first()
+                    if request_update:
+                        request_update = Requests(
+                            id=id_client,
+                            product=form.product.data,
+                            date_add=form.date_add.data,
+                            status_request=form.status_request.data,
+                            first_name_client=form.first_name_client.data,
+                            last_name_client=form.last_name_client.data,
+                            phone_client=form.phone_client.data,
+                            passport_series=form.passport_series.data,
+                            passport_number=form.passport_number.data
+                        )
+                        db.session.add(request_update)
+                        db.session.commit()
+                        flash(f'You have successfully data update for user with id: {id_client}.', 'success')
+                        return render_template('user/request_client.html', page_title=title, id_client=id_client, form=form)
+                else:
+                    flash('Update unsuccessful. Please check data.', 'warning')
+                return redirect(url_for('user.requests'))
+
+            if marker_change_request == 'done':
+                new_status_request = 'done'
+                request_update = Requests.query.filter(Requests.id == id_client).first()
+                if request_update:
+                    request_update = Requests(
+                        status_request=new_status_request,
+                    )
+                    db.session.add(request_update)
+                    db.session.commit()
+                    flash(f'You have successfully change the request to DONE for user with id: {id_client}.', 'success')
+                    return redirect(url_for('user.requests'))
+                else:
+                    flash('Update unsuccessful. Please check data.', 'warning')
+                return redirect(url_for('user.requests'))
+
+            if marker_change_request == 'refused':
+                new_status_request = 'refused'
+                request_update = Requests.query.filter(Requests.id == id_client).first()
+                if request_update:
+                    request_update = Requests(
+                        status_request=new_status_request,
+                    )
+                    db.session.add(request_update)
+                    db.session.commit()
+                    flash(f'You have successfully change the request to {(new_status_request).upper()} for user with id: {id_client}.', 'success')
+                    return redirect(url_for('user.requests'))
+                else:
+                    flash('Update unsuccessful. Please check data.', 'warning')
+                    return redirect(url_for('user.requests'))
 
 
-@blueprint.route('/request_client/<id_client>', methods=['POST'])
-def request_update(id_client):
-    form = RequestsForm()
-    if form.validate_on_submit():
-        request_update = Requests(
-            product=form.product.data,
-            date_add=form.date_add.data,
-            status_request=form.status_request.data,
-            first_name_client=form.first_name_client.data,
-            last_name_client=form.last_name_client.data,
-            phone_client=form.phone_client.data,
-            passport_series=form.passport_series.data,
-            passport_number=form.passport_number.data
-            )
-        db.session.add(request_update)
-        db.session.commit()
-        flash('Date of request update.', 'success')
-    return redirect(url_for('user.request_client' + id_client))
+
+# request_list = Request_clientForm.query.filter(Request_clientForm.status_request == request.arga.get('status_request'))
+
+
+
 
 
