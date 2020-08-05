@@ -60,7 +60,7 @@ def process_login():
             flash('You have successfully logged in', 'success')
             return redirect(url_for('user.requests'))
         else:
-            flash('Login nsuccessful. Please check email and password', 'warning')
+            flash('Login unsuccessful. Please check email and password', 'warning')
     return redirect(url_for('user.login'))
 
 
@@ -157,16 +157,17 @@ def requests_refused():
 
 
 @blueprint.route('/request_client/')
-@blueprint.route('/request_client/<id_client>', methods=['GET', 'POST'])
-def request_client(id_client=None):
+@blueprint.route('/request_client/<id_client>', methods=['POST', 'GET'])
+def request_client(id_client):
     title = 'Client id: ' + str(id_client)
     form = Request_clientForm()
+#   print(request.args.get('status_request'))
     if request.method == 'GET':
         return render_template('user/request_client.html', page_title=title, id_client=id_client, form=form)
-
-    if request.method == 'POST':
-        if request.arga.get('status_request'):
-            marker_change_request = request.arga.get('status_request')
+    else:
+        print(request.args.get('status_request'))
+        if request.args.get('status_request'):
+            marker_change_request = request.args.get('status_request')
 
             if marker_change_request == 'unchanged':
                 flash('You left the request without modifications.', 'secondary')
@@ -174,8 +175,9 @@ def request_client(id_client=None):
 
             if marker_change_request == 'update':
                 if form.validate_on_submit():
-                    request_update = Requests.query.filter(Requests.status_request == request.arga.get('status_request'))
-                    #request_update = Requests.query.filter(Requests.id == id_client).first()
+                    request_update = Requests.query.filter(
+                        Requests.status_request == request.args.get('status_request'))
+                    # request_update = Requests.query.filter(Requests.id == id_client).first()
                     if request_update:
                         request_update = Requests(
                             id=id_client,
@@ -191,7 +193,8 @@ def request_client(id_client=None):
                         db.session.add(request_update)
                         db.session.commit()
                         flash(f'You have successfully data update for user with id: {id_client}.', 'success')
-                        return render_template('user/request_client.html', page_title=title, id_client=id_client, form=form)
+                        return render_template('user/request_client.html', page_title=title, id_client=id_client,
+                                               form=form)
                 else:
                     flash('Update unsuccessful. Please check data.', 'warning')
                 return redirect(url_for('user.requests'))
@@ -220,7 +223,9 @@ def request_client(id_client=None):
                     )
                     db.session.add(request_update)
                     db.session.commit()
-                    flash(f'You have successfully change the request to {(new_status_request).upper()} for user with id: {id_client}.', 'success')
+                    flash(
+                        f'You have successfully change the request to {(new_status_request).upper()} for user with id: {id_client}.',
+                        'success')
                     return redirect(url_for('user.requests'))
                 else:
                     flash('Update unsuccessful. Please check data.', 'warning')
