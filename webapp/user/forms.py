@@ -77,6 +77,6 @@ class Request_clientForm(FlaskForm):
     submit_update = SubmitField('Update', render_kw={"class": "btn btn-warning"})
     submit_accept = SubmitField('Accept', render_kw={"class": "btn btn-success"})
     submit_reject = SubmitField('Reject', render_kw={"class": "btn btn-danger"})
-    submit_unchanged = SubmitField('Unchanged and back', render_kw={"class": "btn btn-secondary"})
+    submit_unchanged = SubmitField('Back', render_kw={"class": "btn btn-secondary"})
 
 

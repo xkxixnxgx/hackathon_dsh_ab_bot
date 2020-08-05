@@ -13,40 +13,40 @@
                         <div class="col-6">
                             <div class="form-group">
                                 {{ form.product.label }}
-                                {{ form.product() }}
+                            <input class="form-control" type="text" value="{{ request_list.product }}">
                             </div>
                             <div class="form-group">
                                 {{ form.date_add.label }}
-                                {{ form.date_add() }}
+                                <input class="form-control" type="text" value="{{ request_list.date_add }}">
                             </div>
                             <div class="form-group">
                                 {{ form.status_request.label }}
-                                {{ form.status_request() }}
+                                <input class="form-control" type="text" value="{{ request_list.status_request }}">
                             </div>
                             <div class="form-group">
                                 {{ form.first_name_client.label }}
-                                {{ form.first_name_client() }}
+                                <input class="form-control" type="text" value="{{ request_list.first_name_client }}">
                             </div>
                             <div class="form-group">
                                 {{ form.last_name_client.label }}
-                                {{ form.last_name_client() }}
+                                <input class="form-control" type="text" value="{{ request_list.last_name_client }}">
                             </div>
                              <div class="form-group">
                                 {{ form.phone_client.label }}
-                                {{ form.phone_client() }}
+                                <input class="form-control" type="text" value="{{ request_list.phone_client }}">
                             </div>
                              <div class="form-group">
                                 {{ form.passport_series.label }}
-                                {{ form.passport_series() }}
+                                <input class="form-control" type="text" value="{{ request_list.passport_series }}">
                             </div>
                             <div class="form-group">
                                 {{ form.passport_number.label }}
-                                {{ form.passport_number() }}
+                                <input class="form-control" type="text" value="{{ request_list.passport_number }}">
                             </div>
                             <a class="btn btn-outline-secondary" href="?status_request=unchanged">Unchanged and back</a>
                             <a class="btn btn-outline-warning" href="?status_request=update">Update</a>
                             <a class="btn btn-outline-success" href="?status_request=done">Accept</a>
-                            <a class="btn btn-outline-danger" href="?status_request=refused">Reject</a>
+                            <a class="btn btn-outline-danger" type="submit" href="?status_request=refused">Reject</a>
                         </div>
                         <div class="col">
                         </div>
