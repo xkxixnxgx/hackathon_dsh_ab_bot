@@ -11,7 +11,7 @@ with app.app_context(): # строка после которой можно ра
     product = input('Product: ')
     date_now = datetime.now()
     date_add = date_now.strftime('%d.%m.%Y')
-    status_request = 'done'
+    status_request = 'considers'
     first_name_client = input('Write u first name: ')
     last_name_client = input('Write u last name: ')
     passport_series = input('Write u passport series: ')
