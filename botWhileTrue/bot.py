@@ -1,28 +1,65 @@
-import telebot
+import telebot # pytelegrambotapi
 import requests
 from telebot import types
-
-token = '1208274828:AAHEqmnQDAPGa-16ibojQI9LtC_eIWfptws'
+from random import choice
+import menu
+# token = '1208274828:AAHEqmnQDAPGa-16ibojQI9LtC_eIWfptws'
+token = '1340902997:AAH0MDN5eLDNbi74QRRaooM9gojRGEuZMds'
 bot = telebot.TeleBot(token)
+
+quest = ["Номер телефона", "Ф.И.О.", "Город", "Любимый цвет"]
+quest_count = 0
+registration = False
+reg_form = {}
+
+# Тестовая функция регистрации
+@bot.message_handler(commands=['reg'])
+def reg(message):
+    global registration, reg_form, quest_count
+    registration = True
+    reg_form = {}
+    quest_count = 0
+    reg_form['chat_id'] = message.chat.id
+    # keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    # button_phone = types.KeyboardButton(text="Отправить номер телефона", request_contact=True)
+    # keyboard.add(button_phone)
+    # bot.send_message(message.chat.id, f"Укажите {quest[quest_count]}", reply_markup=keyboard)
+    
+
+@bot.message_handler(func=lambda x: registration == True)
+def reg_proc(message):
+    global reg_form, quest_count, registration
+    count = quest_count
+    answer = message.text
+    reg_form[quest[count]] = answer
+
+    if count < len(quest) - 1:
+        quest_count += 1
+        bot.send_message(message.chat.id, f"Укажите {quest[quest_count]}")
+    else:
+        print(reg_form)
+        registration = False
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
+        markup.add(*menu.start)
+        bot.send_message(message.chat.id, "Зпасибо за регистрацию", reply_markup=markup)
+
 
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
     # выводим клавиатуру
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton('Вклад')
-    item2 = types.KeyboardButton('Кредит')
-    item3 = types.KeyboardButton('Ипотека')
-    item4 = types.KeyboardButton('Дебетовые карты')
-    item5 = types.KeyboardButton('Статус заявки')
-    item6 = types.KeyboardButton('Специалист')
-    markup.add(item1, item2, item3, item4, item5, item6)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
+    markup.add(*menu.start)
+
+    text = "".join([
+        f"Здравствуйте, {message.from_user.first_name}!\n",
+        f"Вас приветствует - <b>{bot.get_me().first_name}</b>.\n\n",
+        "Выберите необходимый пункт меню:\n",
+        "/status - Ваши заявки"
+    ])
+
     # приветствие после команды /start
-    bot.send_message(message.chat.id, 'Здравствуйте, {0.first_name}!\nВас приветствует - <b>{1.first_name}</b>.\n \n'
-                                      'Выберите необходимый пункт меню:\n'
-                                      '/status - Ваши заявки'.format(message.from_user,
-                                                                               bot.get_me()), parse_mode='html',
-                     reply_markup=markup)
+    bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup)
 
 """Для проверки статуса уже сделанной заявки"""
 @bot.message_handler(commands=['status'])
@@ -33,67 +70,37 @@ def status(message):
     keyboard.add(button_phone)
     bot.send_message(message.chat.id, "Отправьте свой номер телефона", reply_markup=keyboard)
 
+@bot.message_handler(regexp=r'^Заявки$')
+def mumu(message):
+    # просим поделиться телефоном вызвав функцию status()
+    # или чтобы клиент написал номер заявки и ищем в своей базе данных
+    bot.send_message(message.chat.id, 'У вас нет заявок')
+
+# @bot.message_handler(regexp=r'^Специалист$')
 
 @bot.message_handler(content_types=['text', 'document', 'photo'])
-def lalala(message):
+def lalala(message: types.Message):
     if message.chat.type == 'private':
-        if message.text == 'Вклад':
-            markup_vklad = types.InlineKeyboardMarkup(row_width=1)
-            item7 = types.InlineKeyboardButton('Уверенное будущее до 6,3%*', callback_data='vklad_future')
-            item8 = types.InlineKeyboardButton('Я сам?! до 5,8%*', callback_data='vklad_self')
-            item9 = types.InlineKeyboardButton('Просто преумножить до 5%*', callback_data='vklad_mnzh')
-            item10 = types.InlineKeyboardButton('Просто поймай момент до 2,95%*', callback_data='vklad_moment')
-            item11 = types.InlineKeyboardButton('Просто управлять до 4,6%*', callback_data='vklad_upr')
-            item12 = types.InlineKeyboardButton('Просто накопить до 5,1%*', callback_data='vklad_nakop')
-            markup_vklad.add(item7, item8, item9, item10, item11, item12)
-            bot.send_message(message.chat.id, 'Выберите необходимую вам программу:', reply_markup=markup_vklad)
-
-        elif message.text == 'Кредит':
-            markup_kredit = types.InlineKeyboardMarkup(row_width=1)
-            item13 = types.InlineKeyboardButton('Помощь в период COVID-19', callback_data='kredit_covid19')
-            item14 = types.InlineKeyboardButton('Кредит наличными до 7 лет', callback_data='kredit_cash')
-            item15 = types.InlineKeyboardButton('Кредит до 20 лет', callback_data='kredit_zalog')
-            item16 = types.InlineKeyboardButton('Рефинансирование кредитов', callback_data='kredit_ref')
-            item17 = types.InlineKeyboardButton('Кредитная карта Emotion', callback_data='kredit_card')
-            markup_kredit.add(item13, item14, item15, item16, item17)
-            bot.send_message(message.chat.id, 'Выберите удобную вам программу:', reply_markup=markup_kredit)
-
-        elif message.text == 'Ипотека':
-            markup_ipoteka = types.InlineKeyboardMarkup(row_width=1)
-            item18 = types.InlineKeyboardButton('Вторичное жилье', callback_data='ipoteka_vtor')
-            item19 = types.InlineKeyboardButton('Новостройки с господдержкой', callback_data='ipoteka_novogos')
-            item20 = types.InlineKeyboardButton('Новостройки', callback_data='ipoteka_novo')
-            item21 = types.InlineKeyboardButton('Рефинансирование ипотеки', callback_data='ipoteka_ref')
-            item22 = types.InlineKeyboardButton('Господдержка для семей с детьми', callback_data='ipoteka_child')
-            item23 = types.InlineKeyboardButton('Коммерческая недвижимость', callback_data='ipoteka_kom')
-            item24 = types.InlineKeyboardButton('Дом и земельный участок', callback_data='ipoteka_house')
-            markup_ipoteka.add(item18, item19, item20, item21, item22, item23, item24)
-            bot.send_message(message.chat.id, 'Выберите нужную вам программу', reply_markup=markup_ipoteka)
-
-        elif message.text == 'Дебетовые карты':
-            markup_card = types.InlineKeyboardMarkup(row_width=1)
-            item25 = types.InlineKeyboardButton('Карта Aurum', callback_data='card_aurum')
-            item26 = types.InlineKeyboardButton('Карта Evolution', callback_data='card_evolution')
-            item27 = types.InlineKeyboardButton('Карта Generation', callback_data='card_generation')
-            item28 = types.InlineKeyboardButton('Ак Барс Premium', callback_data='card_premium')
-            item29 = types.InlineKeyboardButton('Классическая карта', callback_data='card_classic')
-            item30 = types.InlineKeyboardButton('Мир Долголетия', callback_data='card_mir')
-            markup_card.add(item25, item26, item27, item28, item29, item30)
-            bot.send_message(message.chat.id, 'Выберите удобную вам программу:', reply_markup=markup_card)
-
-        elif message.text == 'Специалист':
-            '''не работает'''
-            bot.send_message(message.chat.id, 'Отправлен запрос на консультацию.\nВ ближайшее время с вами свяжется специалист банка..')
-            bot.send_message(chat_id=71404035, text=f'Клиент @{message.from_user.username} просит начать консультацию')
-
-        elif message.text == 'Статус заявки':
-            # просим поделиться телефоном вызвав функцию status()
-            # или чтобы клиент написал номер заявки и ищем в своей базе данных
-            bot.send_message(message.chat.id, 'У вас нет заявок')
-
-        else:
+        user_message = message.text
+        
+        try:
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            markup.add(*menu.services[user_message])
+            bot.send_message(message.chat.id, choice(menu.service_messages), reply_markup=markup)
+        except KeyError:
             bot.send_message(message.chat.id, 'Неверная команда')
 
+        # elif message.text == 'Специалист':
+        #     '''не работает'''
+        #     bot.send_message(message.chat.id, 'Отправлен запрос на консультацию.\nВ ближайшее время с вами свяжется специалист банка..')
+        #     bot.send_message(chat_id=71404035, text=f'Клиент @{message.from_user.username} просит начать консультацию')
+
+        # elif message.text == 'Статус заявки':
+        #     # просим поделиться телефоном вызвав функцию status()
+        #     # или чтобы клиент написал номер заявки и ищем в своей базе данных
+        #     bot.send_message(message.chat.id, 'У вас нет заявок')
+
+        # else:
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
