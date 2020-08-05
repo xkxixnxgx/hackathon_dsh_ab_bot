@@ -49,3 +49,130 @@ service_messages = [
     "Выберите удобную вам программу:",
     "Выберите нужную вам программу"
 ]
+
+proposals = {
+    # ВКЛАДЫ
+    "vklad_future": {
+        "name": "Уверенное будущее",
+        "message": "Вклад с накопительным страхованием жизни",
+        "link": "https://www.akbars.ru/individuals/deposits/uverennoe-budushchee/"
+    },
+    "vklad_self": {
+        "name": "Я сам",
+        "message": "Вклад с пополнением и пролонгацией",
+        "link": "https://www.akbars.ru/individuals/deposits/ya-sam/"
+    },
+    "vklad_mnzh": {
+        "name": "Просто преумножить",
+        "message": "Вклад с пополнением и снятием",
+        "link": "https://www.akbars.ru/individuals/deposits/prosto-preumnozhit/"
+    },
+    "vklad_moment": {
+        "name": "Просто поймать момент",
+        "message": "Вклад сроком на 31 день",
+        "link": "https://www.akbars.ru/individuals/deposits/prosto-poimat-moment/"
+    },
+    "vklad_upr": {
+        "name": "Просто управлять",
+        "message": "Вклад с частичным снятием",
+        "link": "https://www.akbars.ru/individuals/deposits/prosto-upravlyat/"
+    },
+    "vklad_nakop": {
+        "name": "Просто накопить",
+        "message": "Вклад с удобными процентами",
+        "link": "https://www.akbars.ru/individuals/deposits/prosto-nakopit/"
+    },
+    # КРЕДИТЫ
+    "kredit_covid19": {
+        "name": "Оставайся дома",
+        "message": "Наши услуги и рекомендации для вас",
+        "link": "https://www.akbars.ru/individuals/stay-home/"
+    },
+    "kredit_cash": {
+        "name": "Потребительский",
+        "message": "От 7,7%*",
+        "link": "https://www.akbars.ru/individuals/credits/potrebitelskiy/"
+    },
+    "kredit_zalog": {
+        "name": "Кредит под залог недвижимости",
+        "message": "Под залог недвижимости",
+        "link": "https://www.akbars.ru/individuals/credits/potrebkredit-zalog-nedvizhimosti/"
+    },
+    "kredit_ref": {
+        "name": "Рефинансирование",
+        "message": "Рефинансирование потребительских кредитов",
+        "link": "https://www.akbars.ru/individuals/credits/refinansirovanie-potrebkreditov/"
+    },
+    "kredit_card": {
+        "name": "Кредитная карта Emotion",
+        "message": "Льготный период, кэшбэк рублями и снятие наличных без комиссии",
+        "link": "https://www.akbars.ru/individuals/credit-cards/emotion/"
+    },
+    # ИПОТЕКИ
+    "ipoteka_vtor": {
+        "name": "Мегаполис",
+        "message": "Ставка от 7,75%:",
+        "link": "https://www.akbars.ru/individuals/hypothec/megapolis/"
+    },
+    "ipoteka_novogos": {
+        "name": "Субсидирование ставки",
+        "message": "Ставка от 6,1%",
+        "link": "https://www.akbars.ru/individuals/hypothec/subsidirovaniye-stavki/"
+    },
+    "ipoteka_novo": {
+        "name": "Перспектива",
+        "message": "Ставка от 7,75%",
+        "link": "https://www.akbars.ru/individuals/hypothec/perspektiva/"
+    },
+    "ipoteka_ref": {
+        "name": "Рефинансирование",
+        "message": "Ставка от 7,99%",
+        "link": "https://www.akbars.ru/individuals/hypothec/refinansirovanie-ipoteki/"
+    },
+    "ipoteka_child": {
+        "name": "Семья с детьми",
+        "message": "Ставка от 4,9%",
+        "link": "https://www.akbars.ru/individuals/hypothec/gospodderzhka-semya-s-detmi/"
+    },
+    "ipoteka_kom": {
+        "name": "Бизнес",
+        "message": "Ставка от 9,99%",
+        "link": "https://www.akbars.ru/individuals/hypothec/ak-bars-biznes/"
+    },
+    "ipoteka_house": {
+        "name": "Комфорт",
+        "message": "Ставка от 8,5%",
+        "link": "https://www.akbars.ru/individuals/hypothec/komfort/"
+    },
+    # Карты
+    "card_aurum": {
+        "name": "Aurum",
+        "message": "Кэшбэк за покупки и процент на остаток выплачиваются золотом",
+        "link": "https://www.akbars.ru/individuals/cards/aurum/"
+    },
+    "card_evolution": {
+        "name": "Evolution",
+        "message": "Самая выгодная карта для полетов по России*",
+        "link": "https://www.akbars.ru/individuals/cards/evolution/"
+    },
+    "card_generation": {
+        "name": "Generation",
+        "message": "Для тех, кто постоянно в движении",
+        "link": "https://www.akbars.ru/individuals/cards/generation/"
+    },
+    "card_premium": {
+        "name": "Premium",
+        "message": "Пакет услуг повышенной комфортности",
+        "link": "https://www.akbars.ru/individuals/cards/ak-bars-premium/"
+    },
+    "card_classic": {
+        "name": "Classic",
+        "message": "Универсальная карта для покупок",
+        "link": "https://www.akbars.ru/individuals/cards/classic/"
+    },
+    "card_mir": {
+        "name": "Карта долголетия",
+        "message": "Получайте пенсию на карту",
+        "link": "https://www.akbars.ru/individuals/cards/mir-karta-dolgoletiya/"
+    }
+}
