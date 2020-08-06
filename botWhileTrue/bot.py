@@ -5,10 +5,11 @@ from random import choice
 import menu
 import questions
 import user
-
+import mongo
 
 # token = '1208274828:AAHEqmnQDAPGa-16ibojQI9LtC_eIWfptws'
 token = '1340902997:AAH0MDN5eLDNbi74QRRaooM9gojRGEuZMds'
+
 # bot = telebot.TeleBot(token, num_threads=8)
 bot = telebot.AsyncTeleBot(token)
 
@@ -92,14 +93,22 @@ def ask_question(message):
         bot.send_message(message.chat.id, question[1], reply_markup=markup)
         bot.register_next_step_handler(message, get_answer, question)
     except StopIteration:
+        bot.send_message(message.chat.id, "Оформление заявки...")
+        
+        to_transfer = user.prapare(message.chat.id)
+        mongo.write_data(to_transfer)
+
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
         markup.add(*menu.start)
-        bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
-        print(user.get(message.chat.id))
+        # bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
+        bot.edit_message_text(
+            "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", 
+            message.chat.id, message.message_id, reply_markup=markup
+        )
+
     except KeyError:
         print(question)
         
-
 
 def get_answer(message, question):
     if message.text == "Пропустить": return ask_question(message)

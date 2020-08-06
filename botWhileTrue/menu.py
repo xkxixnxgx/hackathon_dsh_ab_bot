@@ -5,7 +5,7 @@ start = [
     types.KeyboardButton('Кредит'),
     types.KeyboardButton('Ипотека'),
     types.KeyboardButton('Дебетовые карты'),
-    types.KeyboardButton('Статус заявки'),
+    types.KeyboardButton('Заявки'),
     types.KeyboardButton('Специалист')
 ]
 
