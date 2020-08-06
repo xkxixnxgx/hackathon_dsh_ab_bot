@@ -57,7 +57,7 @@ def submit(call):
     user.set(call.message.chat.id, reg_form=questions.start(user_info['service']))
 
     text = "".join([
-        f"Тип продукта:, {user_info['service']}!\n",
+        f"Тип продукта: {user_info['service']}!\n",
         f"Имя продукта: {user_info['proposal']}.\n\n",
         "Желаете продолжить?",
     ])
@@ -96,6 +96,8 @@ def ask_question(message):
         markup.add(*menu.start)
         bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
         print(user.get(message.chat.id))
+    except KeyError:
+        print(question)
         
 
 
@@ -113,7 +115,8 @@ def back(call):
     # proposal = call.data
 
     message = call.message
-    message.text = user.get(call.message.chat.id)['service'] # Текущий сервис
+    # message.text = user.get(call.message.chat.id)['service'] # Текущий сервис
+    message.text = user.user_dict[call.message.chat.id]['service'] # Текущий сервис
     
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(*menu.services[message.text])
@@ -149,7 +152,8 @@ def callback_inline(call):
         except KeyError:
             bot.send_message(call.message.chat.id, "В разработке")
 
+
 # СТАРТ
 if __name__ == '__main__':
     # bot.polling(none_stop=True, interval=0)
-    bot.polling()
+    bot.polling(timeout=100)
