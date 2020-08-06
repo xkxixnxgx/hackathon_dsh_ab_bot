@@ -1,113 +1,110 @@
-import telebot # pytelegrambotapi
-import requests
-from telebot import types
+import telebot
+from telebot import types # pytelegrambotapi
 from random import choice
+
 import menu
 import questions
+import user
+
 
 # token = '1208274828:AAHEqmnQDAPGa-16ibojQI9LtC_eIWfptws'
 token = '1340902997:AAH0MDN5eLDNbi74QRRaooM9gojRGEuZMds'
-bot = telebot.TeleBot(token)
+# bot = telebot.TeleBot(token, num_threads=8)
+bot = telebot.AsyncTeleBot(token)
 
-
-registration = False
-registration_form = None
-current_question = None
-
-user = {
-    "chat_id": "",
-    "username": "",
-    "service": "",
-    "proposal": "",
-    "status": "",
-    "data": {},
-}
-
-
+print("Bot has been started")
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    
+    # Создание нового пользователя
+    user.create(message.chat.id, message.chat.username)
+
     # выводим клавиатуру
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
     markup.add(*menu.start)
 
     text = "".join([
         f"Здравствуйте, {message.from_user.first_name}!\n",
-        f"Вас приветствует - <b>{bot.get_me().first_name}</b>.\n\n",
+        # f"Вас приветствует - <b>{bot.get_me().first_name}</b>.\n\n",
         "Выберите необходимый пункт меню:\n",
         "/status - Ваши заявки"
     ])
-
+    print(bot.get_me())
     # приветствие после команды /start
     bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup)
 
 
 # Сервисы
-@bot.message_handler(
-    content_types=['text', 'document', 'photo'],
-    func=lambda x : registration == False)
-def services(message: types.Message):
+@bot.message_handler(content_types=['text', 'document', 'photo'])
+def services(message):
+    if not user.check(message.chat.id): user.create(message.chat.id, message.chat.username)
     if message.chat.type == 'private':
-        user_message = message.text
-        
+        user_message = message.text    
+        user.set(message.chat.id, service=user_message)
+
         try:
             markup = types.InlineKeyboardMarkup(row_width=1)
             markup.add(*menu.services[user_message])
             bot.send_message(message.chat.id, choice(menu.service_messages), reply_markup=markup)
-            
-            user['chat_id'] = message.chat.id
-            user["service"] = user_message
         except KeyError:
             bot.send_message(message.chat.id, 'Неверная команда')
-
-
-# Отмена заявки
-@bot.message_handler(regexp=r'^Отмена$', func=lambda x: registration == True)
-def cancel(message):
-    global registration
-    registration = False
-
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
-    markup.add(*menu.start)
-    bot.send_message(message.chat.id, "Заявка отменена. Данные не сохранены.", reply_markup=markup)
 
 
 # Оформить заявку
 @bot.callback_query_handler(func=lambda call: call.data == 'submit')
 def submit(call):
-    global registration_form, registration, current_question
-    registration = True
-    registration_form = questions.start(user['service'])
+    user_info = user.get(call.message.chat.id)
+    user.set(call.message.chat.id, reg_form=questions.start(user_info['service']))
 
-    first_question = next(registration_form)
-    current_question = first_question[0]
-    bot.send_message(call.message.chat.id, first_question[1])
+    text = "".join([
+        f"Тип продукта:, {user_info['service']}!\n",
+        f"Имя продукта: {user_info['proposal']}.\n\n",
+        "Желаете продолжить?",
+    ])
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(types.KeyboardButton("Продолжить"))
+    markup.add(types.KeyboardButton("Отмена"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+    bot.register_next_step_handler(call.message, is_accept)
 
 
-# Регистрация
-@bot.message_handler(func=lambda x: registration == True)
-def reg(message):
+def is_accept(message):
+    if message.text == "Продолжить":
+        return ask_question(message)
+        # bot.register_next_step_handler(message, ask_question)
+    elif message.text == "Отмена":
+        user.user_dict[message.chat.id]['reg_form'] = None
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
+        markup.add(*menu.start)
+        bot.send_message(message.chat.id, "Заявка отменена.", reply_markup=markup)
+
+
+def ask_question(message):
     try:
-        global current_question, registration
-        user['data'][current_question] = message.text
-
-        item = next(registration_form)
-        current_question = item[0]
-
+        question = next(user.user_dict[message.chat.id]['reg_form'])
+        
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        markup.add(types.KeyboardButton("Отмена"))
         markup.add(types.KeyboardButton("Пропустить"))
-        bot.send_message(message.chat.id, item[1], reply_markup=markup)
+        markup.add(types.KeyboardButton("Отмена"))
+        
+        bot.send_message(message.chat.id, question[1], reply_markup=markup)
+        bot.register_next_step_handler(message, get_answer, question)
     except StopIteration:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
         markup.add(*menu.start)
+        bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
+        print(user.get(message.chat.id))
+        
 
-        bot.send_message(message.chat.id, "Заявка принята", reply_markup=markup)
 
-        registration = False
-        # TODO: Функция передачи заявки в базу данных
-        print(user)
+def get_answer(message, question):
+    if message.text == "Пропустить": return ask_question(message)
+    elif message.text == "Отмена": return is_accept(message)
+    else:
+        user.user_dict[message.chat.id]['data'][question[0]] = message.text
+        return ask_question(message)
 
 
 # Назад
@@ -116,7 +113,7 @@ def back(call):
     # proposal = call.data
 
     message = call.message
-    message.text = user['service'] # Текущий сервис
+    message.text = user.get(call.message.chat.id)['service'] # Текущий сервис
     
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(*menu.services[message.text])
@@ -134,8 +131,9 @@ def callback_inline(call):
     if call.message:
         try:
             proposal = call.data
-            user['proposal'] = menu.proposals[proposal]['name']
-            print(user)
+            # user['proposal'] = menu.proposals[proposal]['name']
+            user.set(call.message.chat.id, proposal=menu.proposals[proposal]['name'])
+            
 
             markupupup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton("Оставить заявку", callback_data='submit')
@@ -153,4 +151,5 @@ def callback_inline(call):
 
 # СТАРТ
 if __name__ == '__main__':
-    bot.polling(none_stop=True, interval=0)
+    # bot.polling(none_stop=True, interval=0)
+    bot.polling()

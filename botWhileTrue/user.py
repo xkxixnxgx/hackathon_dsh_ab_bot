@@ -1,0 +1,28 @@
+user_dict = {}
+
+def create(chat_id: str, username: str):
+    user_dict[chat_id] = dict({
+        "username": f"@{username}",
+        "reg_lock": False,
+        "reg_form": None,
+        "service": "",
+        "proposal": "",
+        "status": "",
+        "data": {}
+    })
+
+def check(chat_id: str) -> bool:
+    if chat_id in user_dict: return True
+    return False
+
+def get(chat_id: str) -> dict:
+    if chat_id in user_dict: return user_dict[chat_id]
+    else: return {}
+
+def set(chat_id: str, data=False, **args):
+    if data: 
+        for key, value in args.items(): user_dict[chat_id][data][key] = value
+    else:
+        for key, value in args.items(): user_dict[chat_id][key] = value
+    
+
