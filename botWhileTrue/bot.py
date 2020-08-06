@@ -3,48 +3,26 @@ import requests
 from telebot import types
 from random import choice
 import menu
+import questions
 
 # token = '1208274828:AAHEqmnQDAPGa-16ibojQI9LtC_eIWfptws'
 token = '1340902997:AAH0MDN5eLDNbi74QRRaooM9gojRGEuZMds'
 bot = telebot.TeleBot(token)
 
-quest = ["Номер телефона", "Ф.И.О.", "Город", "Любимый цвет"]
-quest_count = 0
+
 registration = False
-reg_form = {}
-user = {}
+registration_form = None
+current_question = None
 
+user = {
+    "chat_id": "",
+    "username": "",
+    "service": "",
+    "proposal": "",
+    "status": "",
+    "data": {},
+}
 
-# Тестовая функция регистрации
-@bot.message_handler(commands=['reg'])
-def reg(message):
-    global registration, reg_form, quest_count
-    registration = True
-    reg_form = {}
-    quest_count = 0
-    reg_form['chat_id'] = message.chat.id
-    # keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    # button_phone = types.KeyboardButton(text="Отправить номер телефона", request_contact=True)
-    # keyboard.add(button_phone)
-    # bot.send_message(message.chat.id, f"Укажите {quest[quest_count]}", reply_markup=keyboard)
-    
-
-@bot.message_handler(func=lambda x: registration == True)
-def reg_proc(message):
-    global reg_form, quest_count, registration
-    count = quest_count
-    answer = message.text
-    reg_form[quest[count]] = answer
-
-    if count < len(quest) - 1:
-        quest_count += 1
-        bot.send_message(message.chat.id, f"Укажите {quest[quest_count]}")
-    else:
-        print(reg_form)
-        registration = False
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
-        markup.add(*menu.start)
-        bot.send_message(message.chat.id, "Зпасибо за регистрацию", reply_markup=markup)
 
 
 @bot.message_handler(commands=['start'])
@@ -65,18 +43,11 @@ def start_message(message):
     bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup)
 
 
-"""Для проверки статуса уже сделанной заявки"""
-@bot.message_handler(commands=['status'])
-def status(message):
-    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button_phone = types.KeyboardButton(text="Отправить номер телефона", request_contact=True)
-    # button_geo = types.KeyboardButton(text="Отправить местоположение", request_location=True)
-    keyboard.add(button_phone)
-    bot.send_message(message.chat.id, "Отправьте свой номер телефона", reply_markup=keyboard)
-
-
-@bot.message_handler(content_types=['text', 'document', 'photo'])
-def lalala(message: types.Message):
+# Сервисы
+@bot.message_handler(
+    content_types=['text', 'document', 'photo'],
+    func=lambda x : registration == False)
+def services(message: types.Message):
     if message.chat.type == 'private':
         user_message = message.text
         
@@ -91,17 +62,59 @@ def lalala(message: types.Message):
             bot.send_message(message.chat.id, 'Неверная команда')
 
 
+# Отмена заявки
+@bot.message_handler(regexp=r'^Отмена$', func=lambda x: registration == True)
+def cancel(message):
+    global registration
+    registration = False
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
+    markup.add(*menu.start)
+    bot.send_message(message.chat.id, "Заявка отменена. Данные не сохранены.", reply_markup=markup)
+
+
 # Оформить заявку
 @bot.callback_query_handler(func=lambda call: call.data == 'submit')
 def submit(call):
-    pass
+    global registration_form, registration, current_question
+    registration = True
+    registration_form = questions.start(user['service'])
+
+    first_question = next(registration_form)
+    current_question = first_question[0]
+    bot.send_message(call.message.chat.id, first_question[1])
+
+
+# Регистрация
+@bot.message_handler(func=lambda x: registration == True)
+def reg(message):
+    try:
+        global current_question, registration
+        user['data'][current_question] = message.text
+
+        item = next(registration_form)
+        current_question = item[0]
+
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add(types.KeyboardButton("Отмена"))
+        markup.add(types.KeyboardButton("Пропустить"))
+        bot.send_message(message.chat.id, item[1], reply_markup=markup)
+    except StopIteration:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
+        markup.add(*menu.start)
+
+        bot.send_message(message.chat.id, "Заявка принята", reply_markup=markup)
+
+        registration = False
+        # TODO: Функция передачи заявки в базу данных
+        print(user)
 
 
 # Назад
 @bot.callback_query_handler(func=lambda call: call.data == 'back')
 def back(call):
-    proposal = call.data
-    print(proposal)
+    # proposal = call.data
+
     message = call.message
     message.text = user['service'] # Текущий сервис
     
@@ -140,4 +153,4 @@ def callback_inline(call):
 
 # СТАРТ
 if __name__ == '__main__':
-     bot.polling(none_stop=True)
+    bot.polling(none_stop=True, interval=0)
