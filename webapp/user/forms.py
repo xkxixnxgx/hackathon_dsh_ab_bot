@@ -1,50 +1,10 @@
 from flask_wtf import FlaskForm
-from flask_login import current_user
-
-from wtforms import BooleanField, StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
-from flask_wtf.file import FileField, FileAllowed
-
-from webapp import db
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 
 
 class StartForm(FlaskForm):
     start_form = StringField('Start', render_kw={"class": "alert alert-secondary"})
-
-
-class RegisterForm(FlaskForm):
-    username = StringField('Name',
-                           validators=[DataRequired(), Length(min=1, max=30)],
-                           render_kw={"class": "form-control"})
-    user_email = StringField('Email',
-                             validators=[DataRequired(), Length(min=6, max=50), Email()],
-                             render_kw={"class": "form-control"})
-    user_password = PasswordField('Password', validators=[DataRequired()], render_kw={"class": "form-control"})
-    confirm = PasswordField('Confirm Password',
-                            validators=[DataRequired(), EqualTo('user_password', message='Passwords do not match')],
-                            render_kw={"class": "form-control"})
-    submit = SubmitField('Create account',
-                         render_kw={"class": "btn btn-success"})
-
-    def validate_user_email(self, user_email):
-        user_count = User.query.filter_by(user_email=user_email.data).count()
-        if user_count > 0:
-            raise ValidationError('A user with this email address already exists.')
-
-
-class LoginForm(FlaskForm):
-    # render_kw параметр в wtf, в котором можно указать то, что будет добавлено при отрисовке формы.
-    # Мы добавляем класс из bootstrap из строки input class="form-control"
-    user_email = StringField('Email', validators=[DataRequired()], render_kw={"class": "form-control"})
-    user_password = PasswordField('Password', validators=[DataRequired()], render_kw={"class": "form-control"})
-    remember_me = BooleanField('Remember me', default=True, render_kw={"class": "form-check-input"})
-    submit = SubmitField('Log in', render_kw={"class": "btn btn-success"})
-
-
-class AdminForm(FlaskForm):
-    content = StringField('Text', validators=[DataRequired()], render_kw={"class": "form-control"})
-    picture = FileField('Update Picture', render_kw={"class": "form-control"})
-    submit = SubmitField('Save', render_kw={"class": "btn btn-success"})
 
 
 class RequestsForm(FlaskForm):
@@ -65,15 +25,24 @@ class RequestsForm(FlaskForm):
 
 
 class Request_clientForm(FlaskForm):
-    id = StringField('id', validators=[DataRequired()], render_kw={"class": "form-control"})
-    product = StringField('Product', validators=[DataRequired()], render_kw={"class": "form-control"})
-    date_add = StringField('Date create', validators=[DataRequired()], render_kw={"class": "form-control"})
-    status_request = StringField('Status Request', validators=[DataRequired()], render_kw={"class": "form-control"})
-    first_name_client = StringField('First Name', validators=[DataRequired()], render_kw={"class": "form-control"})
-    last_name_client = StringField('Last Name', validators=[DataRequired()], render_kw={"class": "form-control"})
-    phone_client = StringField('Phone', validators=[DataRequired()], render_kw={"class": "form-control"})
-    passport_series = StringField('Passport Series', validators=[DataRequired()], render_kw={"class": "form-control"})
-    passport_number = StringField('Passport Number', validators=[DataRequired()], render_kw={"class": "form-control"})
+    id = StringField('Номер заявки', validators=[DataRequired()], render_kw={"class": "form-control"})
+    username = StringField('Никнейм в мессенджере', validators=[DataRequired()], render_kw={"class": "form-control"})
+    service = StringField('Банковский продукт', validators=[DataRequired()], render_kw={"class": "form-control"})
+    proposal = StringField('Тип банковского продукта', validators=[DataRequired()], render_kw={"class": "form-control"})
+    status = StringField('Статус заявки', validators=[DataRequired()], render_kw={"class": "form-control"})
+    chat_id = StringField('ID чата в телеграмм', validators=[DataRequired()], render_kw={"class": "form-control"})
+    full_name = StringField('ФИО', validators=[DataRequired()], render_kw={"class": "form-control"})
+    birthdate = StringField('Дата рождения', validators=[DataRequired()], render_kw={"class": "form-control"})
+    birthplace = StringField('Место рождения', validators=[DataRequired()], render_kw={"class": "form-control"})
+    passport_number = StringField('Серия номер паспорта', validators=[DataRequired()], render_kw={"class": "form-control"})
+    department_code = StringField('Код подразделения', validators=[DataRequired()], render_kw={"class": "form-control"})
+    date_of_issue = StringField('Дата выдачи', validators=[DataRequired()], render_kw={"class": "form-control"})
+    issued_by = StringField('Организация выдавшая документ', validators=[DataRequired()], render_kw={"class": "form-control"})
+    address = StringField('Адрес регистрации', validators=[DataRequired()], render_kw={"class": "form-control"})
+    actual_address = StringField('Адрес проживания', validators=[DataRequired()], render_kw={"class": "form-control"})
+    i_c = StringField('СНИЛС', validators=[DataRequired()], render_kw={"class": "form-control"})
+    phone_number = StringField('Номер телефона', validators=[DataRequired()], render_kw={"class": "form-control"})
+    email = StringField('Адрес эл.почты', validators=[DataRequired()], render_kw={"class": "form-control"})
     submit_update = SubmitField('Update', render_kw={"class": "btn btn-warning"})
     submit_accept = SubmitField('Accept', render_kw={"class": "btn btn-success"})
     submit_reject = SubmitField('Reject', render_kw={"class": "btn btn-danger"})
