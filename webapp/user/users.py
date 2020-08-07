@@ -3,7 +3,7 @@ import sys # модуль для взаимодействия с системн�
 
 from webapp import create_app
 from webapp.db import db
-from webapp.user.models import User
+# from webapp.user.models import User
 from datetime import datetime
 
 app = create_app()

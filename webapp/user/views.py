@@ -1,15 +1,12 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user
 from webapp.user.forms import LoginForm, RegisterForm, AdminForm, LoginForm, RequestsForm, Request_clientForm
-from webapp.user.models import User, Requests
 from webapp.user.decorators import admin_required
 from datetime import datetime
-from webapp.user.utils import save_picture
 
 from webapp import db
 
 blueprint = Blueprint('user', __name__, url_prefix='/user')
-
 
 
 @blueprint.route('/register')

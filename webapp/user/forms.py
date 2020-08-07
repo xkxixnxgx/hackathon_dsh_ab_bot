@@ -5,7 +5,7 @@ from wtforms import BooleanField, StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 
-from webapp.user.models import User
+from webapp import db
 
 
 class StartForm(FlaskForm):
