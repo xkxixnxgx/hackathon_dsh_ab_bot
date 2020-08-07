@@ -18,10 +18,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # адрес на жестком диске для базы
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db')
 
-#MONGOALCHEMY_DATABASE = 'mongo:///' + os.path.join(basedir, '..', 'mongodb')
-#MONGOALCHEMY_CONNECTION_STRING = 'mongodb://username:pass@ds231315.mlab.com:31315/bestpricedb'
-
-MONGO_URI = "mongodb://localhost:27017/myDatabase"
 
 SECRET_KEY = 'ehuiwevwevwbveu'
 

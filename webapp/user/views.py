@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user
-from webapp.user.forms import LoginForm, RegisterForm, AdminForm, LoginForm, RequestsForm, Request_clientForm
+from webapp.user.forms import RegisterForm, AdminForm, LoginForm, RequestsForm, Request_clientForm
 from webapp.user.decorators import admin_required
 from datetime import datetime
 
-from webapp import db
+from webapp.db import users
 
 blueprint = Blueprint('user', __name__, url_prefix='/user')
 
@@ -18,21 +18,25 @@ def register():
     return render_template('user/register.html', page_title=title, form=reg_form)
 
 
+
+
+
 @blueprint.route('/process-reg', methods=['POST'])
 def process_reg():
     form = RegisterForm()
     if form.validate_on_submit():
         date_now = datetime.now()
         date_reg = date_now.strftime('%d.%m.%Y')
-        new_user = User(username=form.username.data,
-                        user_email=form.user_email.data,
-                        user_password=form.user_password.data,
-                        role='user',
-                        date_reg=date_reg
-                        )
-        new_user.set_password(form.user_password.data)
-        db.session.add(new_user)
-        db.session.commit()
+        users.count_documents({})
+        count = int(users.count_documents({}))
+        id = str(count)
+        new_user = users.insert_one({"id": id,
+                        "user_email": form.user_email.data,
+                        "user_password": form.user_password.data,
+                        "role": 'user',
+                        "date_reg": date_reg,
+                        "username": form.username.data})
+        # new_user.set_password(form.user_password.data)
         flash('You have successfully registered.', 'success')
         return redirect(url_for('user.login'))
     else:
@@ -45,19 +49,22 @@ def process_reg():
 @blueprint.route('/login')
 def login():
     title = 'Log in'
+    login_form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('tracks.login'))
-    login_form = LoginForm()
     return render_template('user/login.html', page_title=title, form=login_form)
 
 
 @blueprint.route('/process-login', methods=['POST'])
-def process_login():
+def process_login(id):
     form = LoginForm()
+    user = users.find_one()
     if form.validate_on_submit():
-        user = User.query.filter(User.user_email == form.user_email.data).first()
-        if user and user.check_password(form.user_password.data):
-            login_user(user, remember=form.remember_me.data)
+        if users.find({'user_email'}) == form.user_email.data:
+            user = users.find({'user_email'})
+            print(user)
+            # if user and user.check_password(form.user_password.data):
+            #     login_user(user, remember=form.remember_me.data)
             flash('You have successfully logged in', 'success')
             return redirect(url_for('user.requests'))
         else:
@@ -72,26 +79,26 @@ def logout():
     return redirect(url_for("user.login"))
 
 
-@blueprint.route('/admin')
-@admin_required
-def admin_index():
-    if current_user.is_admin:
-        title = 'Admin console'
-        admin_form = AdminForm()
-        return render_template('user/admin.html', page_tittle=title, form=admin_form)
-    else:
-        return redirect(url_for("user.console"))
-
-
-@blueprint.route('/process_save', methods=['POST'])
-def process_save():
-    form = AdminForm()
-    if form.validate_on_submit():
-        new_content = Requests(content=form.content.data, picture=form.picture.data)
-        db.session.add(new_content)
-        db.session.commit()
-        flash('You have new content.', 'success')
-    return redirect(url_for('user.requests'))
+# @blueprint.route('/admin')
+# @admin_required
+# def admin_index():
+#     if current_user.is_admin:
+#         title = 'Admin console'
+#         admin_form = AdminForm()
+#         return render_template('user/admin.html', page_tittle=title, form=admin_form)
+#     else:
+#         return redirect(url_for("user.console"))
+#
+#
+# @blueprint.route('/process_save', methods=['POST'])
+# def process_save():
+#     form = AdminForm()
+#     if form.validate_on_submit():
+#         new_content = Requests(content=form.content.data, picture=form.picture.data)
+#         db.session.add(new_content)
+#         db.session.commit()
+#         flash('You have new content.', 'success')
+#     return redirect(url_for('user.requests'))
 
 
 @blueprint.route('/requests', methods=['GET'])
