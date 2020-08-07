@@ -31,6 +31,6 @@ def prapare(chat_id: str) -> dict:
     del user_data['reg_form']
     user_data['chat_id'] = chat_id
     user_data['status'] = "В обработке"
-    user_data['date_time'] = strftime('%H:%M %d.%m.%Y')
+    user_data['date_time'] = strftime("%H:%M %d.%m.%Y")
     return user_data
 

@@ -42,7 +42,9 @@ def services(message):
     if not user.check(message.chat.id): user.create(message.chat.id, message.chat.username)
     if message.text == "Заявки":
         bot.send_message(message.chat.id, "Загрузка данных...")
-        for app in mongo.get_data(message.chat.id):
+        data = mongo.get_data(message.chat.id)
+        if not data: bot.send_message(message.chat.id, "Заявки не найдены.")
+        for app in data:
             text = "".join([
                 f"Тип продукта: {app['service']}!\n",
                 f"Имя продукта: {app['proposal']}.\n",
@@ -113,11 +115,6 @@ def ask_question(message):
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
         markup.add(*menu.start)
-        # bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
-        # bot.edit_message_text(
-        #     "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", 
-        #     message.chat.id, message.message_id, reply_markup=markup
-        # )
         bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
 
     except KeyError:
