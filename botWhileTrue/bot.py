@@ -28,19 +28,31 @@ def start_message(message):
         f"Здравствуйте, {message.from_user.first_name}!\n",
         # f"Вас приветствует - <b>{bot.get_me().first_name}</b>.\n\n",
         "Выберите необходимый пункт меню:\n",
-        "/status - Ваши заявки"
     ])
-    print(bot.get_me())
+
     # приветствие после команды /start
     bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup)
 
 
 # Сервисы
-@bot.message_handler(content_types=['text', 'document', 'photo'])
+@bot.message_handler(
+    content_types=['text', 'document', 'photo'],
+    func=lambda message: message.chat.type == 'private')
 def services(message):
     if not user.check(message.chat.id): user.create(message.chat.id, message.chat.username)
-    if message.chat.type == 'private':
-        user_message = message.text    
+    if message.text == "Заявки":
+        bot.send_message(message.chat.id, "Загрузка данных...")
+        for app in mongo.get_data(message.chat.id):
+            text = "".join([
+                f"Тип продукта: {app['service']}!\n",
+                f"Имя продукта: {app['proposal']}.\n",
+                f"Статус: {app['status']}.",
+            ])
+            bot.send_message(message.chat.id, text)
+    elif message.text == "Специалист":
+        bot.send_message(message.chat.id, "Данный раздел находится в разработке.\nПриносим свои извинения.")
+    else:
+        user_message = message.text
         user.set(message.chat.id, service=user_message)
 
         try:
@@ -51,7 +63,7 @@ def services(message):
             bot.send_message(message.chat.id, 'Неверная команда')
 
 
-# Оформить заявку
+# Оформление заявки
 @bot.callback_query_handler(func=lambda call: call.data == 'submit')
 def submit(call):
     user_info = user.get(call.message.chat.id)
@@ -95,16 +107,18 @@ def ask_question(message):
     except StopIteration:
         bot.send_message(message.chat.id, "Оформление заявки...")
         
+        # Запись в бд
         to_transfer = user.prapare(message.chat.id)
         mongo.write_data(to_transfer)
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True) 
         markup.add(*menu.start)
         # bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
-        bot.edit_message_text(
-            "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", 
-            message.chat.id, message.message_id, reply_markup=markup
-        )
+        # bot.edit_message_text(
+        #     "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", 
+        #     message.chat.id, message.message_id, reply_markup=markup
+        # )
+        bot.send_message(message.chat.id, "Ваша заявка принята.\nСтатус заявки можно посмотреть в меню Заявки", reply_markup=markup)
 
     except KeyError:
         print(question)

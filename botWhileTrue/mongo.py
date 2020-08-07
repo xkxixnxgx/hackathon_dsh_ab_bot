@@ -10,4 +10,7 @@ db = client.user_applications
 posts = db.posts
 
 def write_data(data: dict):
-    return posts.insert_one(data).inserted_id()
+    return posts.insert_one(data).inserted_id
+
+def get_data(chat_id) -> list:
+    return list(posts.find({'chat_id': chat_id}))

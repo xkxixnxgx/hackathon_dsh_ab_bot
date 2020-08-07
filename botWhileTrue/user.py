@@ -3,7 +3,6 @@ user_dict = {}
 def create(chat_id: str, username: str):
     user_dict[chat_id] = dict({
         "username": f"@{username}",
-        "reg_lock": False,
         "reg_form": None,
         "service": "",
         "proposal": "",
@@ -25,4 +24,10 @@ def set(chat_id: str, data=False, **args):
     else:
         for key, value in args.items(): user_dict[chat_id][key] = value
     
+def prapare(chat_id: str) -> dict:
+    user_data = get(chat_id)
+    del user_data['reg_form']
+    user_data['chat_id'] = chat_id
+    user_data['status'] = "В обработке"
+    return user_data
 
