@@ -13,30 +13,30 @@
                         <div class="col-8">
                             <div class="form-group">
                                 {{ form.id.label }}
-                            <input class="form-control" type="text" value="{{ request_list._id }}">
+                            <input class="form-control" type="text" value="{{ request_list._id }}" readonly>
                             </div>
                             <div class="form-group">
                                 {{ form.username.label }}
-                                <input class="form-control" type="text" value="{{ request_list.username }}">
+                                <input class="form-control" type="text" value="{{ request_list.username }}" readonly>
                             </div>
                             <div class="form-group">
                                 {{ form.service.label }}
-                                <input class="form-control" type="text" value="{{ request_list.service }}">
+                                <input class="form-control" type="text" value="{{ request_list.service }}" readonly>
                             </div>
                             <div class="form-group">
                                 {{ form.proposal.label }}
-                                <input class="form-control" type="text" value="{{ request_list.proposal }}">
+                                <input class="form-control" type="text" value="{{ request_list.proposal }}" readonly>
                             </div>
                             <div class="form-group">
                                 {{ form.status.label }}
-                                <input class="form-control" type="text" value="{{ request_list.status }}">
+                                <input class="form-control" type="text" value="{{ request_list.status }}" readonly>
                             </div>
-                             <div class="form-group">
+                            <div class="form-group">
                                 {{ form.chat_id.label }}
-                                <input class="form-control" type="text" value="{{ request_list.chat_id }}">
+                                <input class="form-control" type="text" value="{{ request_list.chat_id }}" readonly>
                             </div>
 
-                             <div class="form-group">
+                            <div class="form-group">
                                 {{ form.full_name.label }}
                                 <input class="form-control" type="text" value="{{ request_list.data['full_name'] }}">
                             </div>
@@ -78,11 +78,11 @@
                             </div>
                             <div class="form-group">
                                 {{ form.phone_number.label }}
-                                <input class="form-control" type="text" value="{{ request_list.data['phone_number'] }}">
+                                <input class="form-control" type="text" value="{{ request_list.data['phone_number'] }}" readonly>
                             </div>
                             <div class="form-group">
                                 {{ form.email.label }}
-                                <input class="form-control" type="text" value="{{ request_list.data['email'] }}">
+                                <input class="form-control" type="text" value="{{ request_list.data['email'] }}" readonly>
                             </div>
                 <br>
                 <br>

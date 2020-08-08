@@ -38,7 +38,7 @@
                         <td>{{ request.proposal }}</td>
                         <td>{{ request.data['full_name'] }}</td>
                         <td>{{ request.data['passport_number'] }}</td>
-                        <td><a href="/user/request_client/{{request.chat_id}}" class="text-decoration-none">телеграмм</a></td>
+                        <td><a href="https://t.me/{{ username_for_tm }}"" class="text-decoration-none">телеграмм</a></td>
                         <td>{{ request.data['phone_number'] }}</td>
                         <td>{{ request.status }}</td>
                         <td><a href="/user/request_client/{{request._id}}" class="text-decoration-none">Детально</a></td>

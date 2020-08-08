@@ -3,6 +3,7 @@ from webapp.user.forms import RequestsForm, Request_clientForm
 
 from webapp.db import posts
 from bson.objectid import ObjectId
+import crypt
 
 blueprint = Blueprint('user', __name__, url_prefix='/user')
 
@@ -11,8 +12,14 @@ blueprint = Blueprint('user', __name__, url_prefix='/user')
 def requests():
     title = 'Requests'
     form = RequestsForm()
-    request_list = posts.find()
-    return render_template('user/requests.html', page_title=title, request_list=request_list, form=form)
+    username_for_tm = crypt.decrypt_dict(posts.find_one('username'))
+    request_list = crypt.decrypt_dict(posts.find())
+    return render_template('user/requests.html',
+                           page_title=title,
+                           request_list=request_list,
+                           form=form,
+                           username_for_tm=username_for_tm
+                           )
 
 
 @blueprint.route('/requests/considers', methods=['GET'])
@@ -20,11 +27,13 @@ def requests_considers():
     title = 'Requests considers'
     form = RequestsForm()
     status_request = 'В обработке'
-    request_list = posts.find({'status':status_request})
+    request_list = crypt.decrypt_dict(posts.find({'status': status_request}))
+    username_for_tm = crypt.decrypt_dict(posts.find_one('username'))
     return render_template('user/requests_considers.html',
                            page_title=title,
                            request_list=request_list,
-                           form=form
+                           form=form,
+                           username_for_tm=username_for_tm
                            )
 
 
@@ -33,11 +42,13 @@ def requests_done():
     title = 'Requests done'
     form = RequestsForm()
     status_request = 'Одобрено'
-    request_list = posts.find({'status': status_request})
+    request_list = crypt.decrypt_dict(posts.find({'status': status_request}))
+    username_for_tm = crypt.decrypt_dict(posts.find_one('username'))
     return render_template('user/requests_done.html',
                            page_title=title,
                            request_list=request_list,
-                           form=form
+                           form=form,
+                           username_for_tm=username_for_tm
                            )
 
 
@@ -46,11 +57,13 @@ def requests_refused():
     title = 'Requests refused'
     form = RequestsForm()
     status_request = 'Отказано'
-    request_list = posts.find({'status': status_request})
+    request_list = crypt.decrypt_dict(posts.find({'status': status_request}))
+    username_for_tm = crypt.decrypt_dict(posts.find_one('username'))
     return render_template('user/requests_refused.html',
                            page_title=title,
                            request_list=request_list,
-                           form=form
+                           form=form,
+                           username_for_tm=username_for_tm
                            )
 
 
@@ -59,7 +72,7 @@ def requests_refused():
 def request_client(id_client):
     title = 'Client id: ' + str(id_client)
     form = Request_clientForm()
-    request_list = posts.find_one({'_id': ObjectId(id_client)})
+    request_list = crypt.decrypt_dict(posts.find_one({'_id': ObjectId(id_client)}))
     # data_list =
     if request.args.get('status_request'):
         marker_change_request = request.args.get('status_request')
@@ -69,6 +82,9 @@ def request_client(id_client):
             return redirect(url_for('user.requests'))
 
         if marker_change_request == 'update':
+            # status_request_done = 'Одобрено'
+            # request_list['status'] = status_request_done
+            # posts.find_one_and_replace({"_id": ObjectId(id_client)}, request_list)
             if form.validate_on_submit():
                 request_update = posts.find(
                     product=form.product.data,
@@ -93,21 +109,18 @@ def request_client(id_client):
                                    )
 
         if marker_change_request == 'done':
-            if True:
-                status_request_done = 'Одобрено'
-                status_now = posts.find_one(['status'])
-                # posts.find_one_and_replace({"_id": ObjectId(id_client)}, {"status": status_request_done})
-                # db.users.update({name: "Tom", age: 29}, {"$set": {age: 30}})
-                flash(f'You have successfully change the request to DONE for user with id: {id_client}.', 'success')
-                return redirect(url_for('user.requests'))
+            status_request_done = 'Одобрено'
+            request_list['status'] = status_request_done
+            crypt.encrypt_dict(posts.find_one_and_replace({"_id": ObjectId(id_client)}, request_list))
+            flash(f'You have successfully change the request to DONE for user with id: {id_client}.', 'success')
+            return redirect(url_for('user.requests'))
 
         if marker_change_request == 'refused':
-            if True:
-                status_request_refused = 'Отказано'
-                # request_list.status_request = status_request_refused
-
-                flash(f'You have successfully change the request to REFUSED for user with id: {id_client}.', 'success')
-                return redirect(url_for('user.requests'))
+            status_request_done = 'Отказано'
+            request_list['status'] = status_request_done
+            crypt.encrypt_dict(posts.find_one_and_replace({"_id": ObjectId(id_client)}, request_list))
+            flash(f'You have successfully change the request to REFUSED for user with id: {id_client}.', 'success')
+            return redirect(url_for('user.requests'))
 
     return render_template('user/request_client.html',
                        page_title=title,
