@@ -15,5 +15,6 @@ def write_data(data: dict):
     return posts.insert_one(encrypted_data).inserted_id
 
 def get_data(chat_id) -> list:
-    decrypted_data = crypt.decrypt_dict(posts.find({'chat_id': chat_id}))
+    encrypt_chatid = crypt.encrypt_dict({'chat_id': chat_id})
+    decrypted_data = crypt.decrypt_dict(posts.find(encrypt_chatid))
     return list(decrypted_data)

@@ -4,7 +4,7 @@ user_dict = {}
 
 def create(chat_id: str, username: str):
     user_dict[chat_id] = dict({
-        "username": f"{username}",
+        "username": username,
         "reg_form": None,
         "service": "",
         "proposal": "",

@@ -52,7 +52,9 @@ def services(message):
             ])
             bot.send_message(message.chat.id, text)
     elif message.text == "Специалист":
-        bot.send_message(message.chat.id, "Данный раздел находится в разработке.\nПриносим свои извинения.")
+        # bot.send_message(message.chat.id, "Данный раздел находится в разработке.\nПриносим свои извинения.")
+        bot.send_message(message.chat.id, 'Запрос Отправлен.\nВ ближайшее время с вами свяжется специалист банка.')
+        bot.send_message(chat_id=71404035, text=f'Клиент @{message.chat.username} просит начать консультацию.')
     else:
         user_message = message.text
         user.set(message.chat.id, service=user_message)
