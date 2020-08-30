@@ -7,6 +7,8 @@ client = MongoClient(CONNECTION_STRING)
 # users = db["users"]
 # requests = db["requests"]
 # posts = db["posts"]
+
+# db = client.mb_test
 db = client.user_applications
 posts = db.posts
-users = db.users
+# users = db.users
